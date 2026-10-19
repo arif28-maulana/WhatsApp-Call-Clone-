@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WhatsApp Call Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #111b21; /* Dark background for the outside area */
+        }
+
+        /* Hide scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Phone Container styling */
+        .phone-mockup {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height untuk mobile (menghindari terpotong address bar) */
+            background-color: #0b141a; /* WhatsApp dark mode default */
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Desktop fallback untuk menjaga rasio aspek 19.5:9 saat dibuka di PC/Laptop */
+        @media (min-width: 600px) {
+            .phone-mockup {
+                width: 400px;
+                height: 866px; /* Menyesuaikan rasio ~19.5:9 */
+                border-radius: 30px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 10px #1a1a1a;
+            }
+        }
+
+        /* Focus outline removal for editable text */
+        [contenteditable="true"]:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 0 4px;
+        }
+
+        /* Background overlay */
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15; /* Subtle background */
+            pointer-events: none;
+        }
+
+        /* Main content z-index */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.bottom-6{bottom:1.5rem}.right-6{right:1.5rem}.z-50{z-index:50}.mx-4{margin-left:1rem;margin-right:1rem}.mb-1{margin-bottom:0.25rem}.mb-8{margin-bottom:2rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.flex{display:flex}.hidden{display:none}.h-11{height:2.75rem}.h-\[180px\]{height:180px}.h-\[50px\]{height:50px}.min-h-screen{min-height:100vh}.w-11{width:2.75rem}.w-\[180px\]{width:180px}.w-\[50px\]{width:50px}.flex-grow{flex-grow:1}.cursor-pointer{cursor:pointer}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:0.25rem}.rounded-\[32px\]{border-radius:32px}.rounded-full{border-radius:9999px}.border{border-width:1px}.border-\[\#2a353a\]\/50{border-color:rgb(42 53 58 / 0.5)}.bg-\[\#00a884\]{--tw-bg-opacity:1;background-color:rgb(0 168 132 / var(--tw-bg-opacity, 1))}.bg-\[\#1a2329\]\/80{background-color:rgb(26 35 41 / 0.8)}.bg-\[\#1a2428\]{--tw-bg-opacity:1;background-color:rgb(26 36 40 / var(--tw-bg-opacity, 1))}.bg-\[\#2a353a\]{--tw-bg-opacity:1;background-color:rgb(42 53 58 / var(--tw-bg-opacity, 1))}.bg-\[\#ff2540\]{--tw-bg-opacity:1;background-color:rgb(255 37 64 / var(--tw-bg-opacity, 1))}.bg-black\/60{background-color:rgb(0 0 0 / 0.6)}.bg-gray-900\/80{background-color:rgb(17 24 39 / 0.8)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.object-cover{object-fit:cover}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.pb-16{padding-bottom:4rem}.pt-2{padding-top:0.5rem}.text-\[13px\]{font-size:13px}.text-\[15px\]{font-size:15px}.text-\[22px\]{font-size:22px}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-medium{font-weight:500}.tracking-tight{letter-spacing:-0.025em}.tracking-wide{letter-spacing:0.025em}.text-\[\#8696a0\]{--tw-text-opacity:1;color:rgb(134 150 160 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-0{opacity:0}.shadow-\[0_0_15px_rgba\(255\2c 37\2c 64\2c 0\.3\)\]{--tw-shadow:0 0 15px rgba(255,37,64,0.3);--tw-shadow-colored:0 0 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.hover\:bg-\[\#008f6f\]:hover{--tw-bg-opacity:1;background-color:rgb(0 143 111 / var(--tw-bg-opacity, 1))}.hover\:bg-\[\#233138\]:hover{--tw-bg-opacity:1;background-color:rgb(35 49 56 / var(--tw-bg-opacity, 1))}.hover\:bg-\[\#344249\]:hover{--tw-bg-opacity:1;background-color:rgb(52 66 73 / var(--tw-bg-opacity, 1))}.hover\:bg-\[\#ff3b53\]:hover{--tw-bg-opacity:1;background-color:rgb(255 59 83 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.group:hover .group-hover\:opacity-100{opacity:1}</style></head>
+<body class="flex items-center justify-center min-h-screen text-white antialiased">
+
+    <!-- Main Phone Mockup -->
+    <div class="phone-mockup">
+        <!-- Background Layer (Ubah URL gambar pada style di bawah ini jika ingin mengganti wallpaper) -->
+        <div id="app-bg" class="bg-layer" style="background-image: url('bgwa.jpg'); opacity: 0.3;"></div>
+
+        <!-- Content Layer -->
+        <div class="content-layer">
+            
+            <!-- Header (Minimize, Name, Add User) -->
+            <div class="flex justify-between items-start px-4 pt-10">
+                <!-- Minimize Button -->
+                <button class="w-11 h-11 bg-[#1a2329]/80 rounded-full flex items-center justify-center hover:bg-[#233138] transition">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 9V3h-6M3 15v6h6M21 3l-7.5 7.5M3 21l7.5-7.5"></path>
+                    </svg>
+                </button>
+
+                <!-- Name & Timer -->
+                <div class="flex flex-col items-center mt-1">
+                    <div contenteditable="true" class="text-[22px] font-medium tracking-tight whitespace-nowrap" spellcheck="false">Raa🤍✨</div>
+                    <div contenteditable="true" id="call-timer" class="text-[15px] text-[#8696a0] font-medium mt-0.5" spellcheck="false">124.01.36</div>
+                </div>
+
+                <!-- Add Participant Button -->
+                <button class="w-11 h-11 bg-[#1a2329]/80 rounded-full flex items-center justify-center hover:bg-[#233138] transition">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Profile Picture Area -->
+            <div class="flex-grow flex items-center justify-center pb-16">
+                <!-- Clickable container to change image -->
+                <div class="relative group cursor-pointer" onclick="document.getElementById('profile-upload').click()">
+                    <!-- Default placeholder using external service -->
+                    <img id="profile-img" src="https://placehold.co/400x400/2a353a/ffffff?text=Add+Photo" alt="Profile Picture" class="w-[180px] h-[180px] rounded-full object-cover shadow-lg border border-[#2a353a]/50">
+                    
+                    <!-- Hover overlay -->
+                    <div class="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-sm font-medium">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mb-1">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                        Edit
+                    </div>
+                </div>
+                <!-- Hidden file input for profile pic -->
+                <input type="file" id="profile-upload" class="hidden" accept="image/*">
+            </div>
+
+            <!-- Bottom Control Dock -->
+            <div class="bg-[#1a2428] rounded-[32px] mx-4 mb-8 px-4 py-3 flex justify-between items-center shadow-lg">
+                <!-- More Button -->
+                <button class="w-[50px] h-[50px] bg-[#2a353a] rounded-full flex items-center justify-center hover:bg-[#344249] transition">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle>
+                    </svg>
+                </button>
+                
+                <!-- Video Call Button -->
+                <button class="w-[50px] h-[50px] bg-[#2a353a] rounded-full flex items-center justify-center hover:bg-[#344249] transition">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
+                    </svg>
+                </button>
+
+                <!-- Speaker Button (Active/White) -->
+                <button class="w-[50px] h-[50px] bg-white rounded-full flex items-center justify-center hover:bg-gray-200 transition shadow-sm">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#111b21">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path>
+                    </svg>
+                </button>
+
+                <!-- Mic Muted Button -->
+                <button class="w-[50px] h-[50px] bg-[#2a353a] rounded-full flex items-center justify-center hover:bg-[#344249] transition">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10.8 4.9c0-.66.54-1.2 1.2-1.2s1.2.54 1.2 1.2l-.01 3.91L15 10.6V5c0-1.66-1.34-3-3-3S9 3.34 9 5v1.8l1.8 1.8V4.9zM19 11h-2c0 .91-.26 1.75-.69 2.48l1.46 1.46A6.921 6.921 0 0019 11zM4.27 3L3 4.27l6 6V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.42-2.31.42-2.76 0-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c.57-.08 1.12-.24 1.64-.46l5.09 5.09L21 21.27 4.27 3z"></path>
+                    </svg>
+                </button>
+
+                <!-- End Call Button -->
+                <button class="w-[50px] h-[50px] bg-[#ff2540] rounded-full flex items-center justify-center hover:bg-[#ff3b53] transition shadow-[0_0_15px_rgba(255,37,64,0.3)]">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 2. Call Duration Timer Logic
+        const timerElement = document.getElementById('call-timer');
+        let timerSeconds = 0;
+        let timerInterval = null;
+
+        // Parse a time string like "5.01.27" or "12.34" into total seconds
+        function parseTime(timeStr) {
+            // Replace colons with dots just in case user typed colons
+            timeStr = timeStr.replace(/:/g, '.');
+            const parts = timeStr.split('.').map(num => parseInt(num) || 0);
+            
+            if (parts.length === 3) {
+                return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
+            } else if (parts.length === 2) {
+                return (parts[0] * 60) + parts[1];
+            } else if (parts.length === 1) {
+                return parts[0];
+            }
+            return 0;
+        }
+
+        // Format total seconds into "H.MM.SS" or "M.SS"
+        function formatTime(totalSeconds) {
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+
+            let timeString = "";
+            if (h > 0) {
+                timeString += h + ".";
+                timeString += m.toString().padStart(2, '0') + ".";
+            } else {
+                timeString += m + ".";
+            }
+            timeString += s.toString().padStart(2, '0');
+            return timeString;
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                timerElement.textContent = formatTime(timerSeconds);
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        // Initialize timer from default text
+        timerSeconds = parseTime(timerElement.textContent);
+        startTimer();
+
+        // Pause timer when user clicks to edit it
+        timerElement.addEventListener('focus', () => {
+            stopTimer();
+        });
+
+        // Resume timer and update value when user clicks away
+        timerElement.addEventListener('blur', () => {
+            let newTimeStr = timerElement.textContent.trim();
+            timerSeconds = parseTime(newTimeStr);
+            timerElement.textContent = formatTime(timerSeconds); // reformat purely
+            startTimer();
+        });
+
+        // Prevent "Enter" key from creating new lines in contenteditable
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    el.blur();
+                }
+            });
+        });
+
+        // 3. Profile Picture Upload Logic
+        const profileInput = document.getElementById('profile-upload');
+        const profileImg = document.getElementById('profile-img');
+
+        profileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    profileImg.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+</body></html>
