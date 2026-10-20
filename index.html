@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WhatsApp Call Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        
+        body, html {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #0b141a;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Hide scrollbar */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Full screen container */
+        .phone-mockup {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile */
+            background-color: transparent;
+            overflow: hidden;
+            position: relative;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Focus outline removal */
+        [contenteditable="true"]:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 2px 6px;
+        }
+
+        /* Background overlay - 100% Opacity as requested */
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 1; /* Opasitas dikembalikan ke 100% */
+            pointer-events: none;
+        }
+
+        /* Main content z-index */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="text-white antialiased">
+
+    <div class="phone-mockup">
+        <!-- Background Layer using bgwa.jpg -->
+        <div id="app-bg" class="bg-layer" style="background-image: url('bgwa.jpg');"></div>
+
+        <!-- Content Layer -->
+        <div class="content-layer">
+            
+            <!-- Header (Posisi dinaikkan dengan pt-8) -->
+            <div class="flex justify-between items-start px-5 pt-8">
+                <!-- Left Button (Minimize / Signal) -->
+                <button id="btn-top-left" class="w-12 h-12 bg-[#1a2329]/80 rounded-full flex items-center justify-center hover:bg-[#233138] transition">
+                    <!-- Arrows Inward Icon -->
+                    <svg id="icon-minimize" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 14 10 14 10 20"></polyline>
+                        <line x1="3" y1="21" x2="10" y2="14"></line>
+                        <polyline points="20 10 14 10 14 4"></polyline>
+                        <line x1="21" y1="3" x2="14" y2="10"></line>
+                    </svg>
+                    <!-- Signal Icon (Hidden initially) -->
+                    <svg id="icon-signal" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="2" y="16" width="4" height="6"></rect>
+                        <rect x="10" y="10" width="4" height="12"></rect>
+                        <rect x="18" y="4" width="4" height="18"></rect>
+                    </svg>
+                </button>
+
+                <!-- Name & Timer -->
+                <div class="flex flex-col items-center mt-1 cursor-text z-20">
+                    <div contenteditable="true" class="text-[17px] font-medium tracking-tight whitespace-nowrap" spellcheck="false">Nama</div>
+                    <div contenteditable="true" id="call-timer" class="text-[14px] text-white/70 font-medium mt-1" spellcheck="false">0.00</div>
+                </div>
+
+                <!-- Right Button (Add Participant / Lock) -->
+                <button id="btn-top-right" class="w-12 h-12 bg-[#1a2329]/80 rounded-full flex items-center justify-center hover:bg-[#233138] transition">
+                    <!-- Add User Icon -->
+                    <svg id="icon-add-user" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                    </svg>
+                    <!-- Lock Icon (Hidden initially) -->
+                    <svg id="icon-lock" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Profile Picture Area -->
+            <div class="flex-grow flex items-center justify-center pb-4 z-10" id="profile-area">
+                <div class="relative group cursor-pointer" onclick="document.getElementById('profile-upload').click()">
+                    <img id="profile-img" src="112953.jpg" onerror="this.src='https://placehold.co/400x400/2a353a/ffffff?text=Add+Photo'" alt="Profile Picture" class="w-[200px] h-[200px] rounded-full object-cover">
+                    <div class="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-sm font-medium">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mb-1">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                        Edit Foto
+                    </div>
+                </div>
+                <input type="file" id="profile-upload" class="hidden" accept="image/*">
+            </div>
+
+            <!-- Bottom Panels Wrapper -->
+            <div class="relative w-full z-20">
+                
+                <!-- Main Control Panel (Grid) -->
+                <!-- Menambahkan border-white/10 sebagai garis tepi tipis opasitas rendah -->
+                <div id="panel-main" class="bg-[#181d20] rounded-[36px] mx-3 mb-6 pt-8 pb-10 px-8 shadow-2xl border-[0.5px] border-white/10 transition-all duration-300">
+                    <div class="grid grid-cols-3 gap-y-8 gap-x-4">
+                        
+                        <!-- Row 1 -->
+                        <div class="flex flex-col items-center gap-3">
+                            <button id="btn-speaker" class="w-[60px] h-[60px] bg-[#2a3034] text-white rounded-full flex items-center justify-center hover:bg-[#343a3e] transition">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path>
+                                </svg>
+                            </button>
+                            <span class="text-[13px] font-medium text-[#e3e4e5] tracking-wide">Speaker</span>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-3">
+                            <button class="w-[60px] h-[60px] bg-[#2a3034] text-white rounded-full flex items-center justify-center hover:bg-[#343a3e] transition">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path>
+                                </svg>
+                            </button>
+                            <span class="text-[13px] font-medium text-[#e3e4e5] tracking-wide">Video</span>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-3">
+                            <button id="btn-mute" class="w-[60px] h-[60px] bg-[#2a3034] text-white rounded-full flex items-center justify-center hover:bg-[#343a3e] transition">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M10.8 4.9c0-.66.54-1.2 1.2-1.2s1.2.54 1.2 1.2l-.01 3.91L15 10.6V5c0-1.66-1.34-3-3-3S9 3.34 9 5v1.8l1.8 1.8V4.9zM19 11h-2c0 .91-.26 1.75-.69 2.48l1.46 1.46A6.921 6.921 0 0019 11zM4.27 3L3 4.27l6 6V11c0 1.66 1.34 3 3 3 .23 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.42-2.31.42-2.76 0-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c.57-.08 1.12-.24 1.64-.46l5.09 5.09L21 21.27 4.27 3z"></path>
+                                </svg>
+                            </button>
+                            <span class="text-[13px] font-medium text-[#e3e4e5] tracking-wide">Bisukan</span>
+                        </div>
+
+                        <!-- Row 2 -->
+                        <div class="flex flex-col items-center gap-3">
+                            <button id="btn-more" class="w-[60px] h-[60px] bg-[#2a3034] text-white rounded-full flex items-center justify-center hover:bg-[#343a3e] transition">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path>
+                                </svg>
+                            </button>
+                            <span class="text-[13px] font-medium text-[#e3e4e5] tracking-wide">Lainnya</span>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-3">
+                            <button class="w-[60px] h-[60px] bg-[#2a3034] text-white rounded-full flex items-center justify-center hover:bg-[#343a3e] transition">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </button>
+                            <span class="text-[13px] font-medium text-[#e3e4e5] tracking-wide">Bagikan</span>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-3">
+                            <button class="w-[60px] h-[60px] bg-[#f15c6d] text-white rounded-full flex items-center justify-center hover:bg-[#ff6b7b] transition shadow-lg">
+                                <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"></path>
+                                </svg>
+                            </button>
+                            <span class="text-[13px] font-medium text-[#e3e4e5] tracking-wide">Akhiri</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Control Panel (Lainnya) -->
+                <div id="panel-alt" class="hidden bg-[#181d20] rounded-[36px] mx-3 mb-6 px-2 py-4 shadow-2xl border-[0.5px] border-white/10 transition-all duration-300">
+                    <div class="flex flex-col">
+                        <!-- Kirim Pesan -->
+                        <div class="flex items-center gap-5 px-6 py-4 rounded-3xl cursor-pointer hover:bg-white/5 transition text-white">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" class="text-white/80">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"></path>
+                                <path d="M7 9h10v2H7zm0-3h10v2H7z"></path>
+                            </svg>
+                            <span class="text-[17px] font-medium tracking-wide">Kirim pesan</span>
+                        </div>
+                        
+                        <!-- Peredam Kebisingan -->
+                        <div class="flex items-center justify-between px-6 py-4 rounded-3xl cursor-pointer hover:bg-white/5 transition text-white">
+                            <div class="flex items-center gap-5">
+                                <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" class="text-white/80">
+                                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path>
+                                </svg>
+                                <span class="text-[17px] font-medium tracking-wide">Peredam kebisingan</span>
+                            </div>
+                            <!-- WhatsApp Style Toggle Switch (Active state) -->
+                            <div class="w-[46px] h-[26px] bg-[#21c063] rounded-full flex items-center p-[2px] transition-colors relative">
+                                <div class="w-[22px] h-[22px] bg-[#0b141a] rounded-full shadow-sm transform translate-x-[20px] flex items-center justify-center transition-transform">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#21c063" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Timer Logic ---
+        const timerElement = document.getElementById('call-timer');
+        let timerSeconds = 0;
+        let timerInterval = null;
+
+        function parseTime(timeStr) {
+            timeStr = timeStr.replace(/:/g, '.');
+            const parts = timeStr.split('.').map(num => parseInt(num) || 0);
+            
+            if (parts.length === 3) return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
+            if (parts.length === 2) return (parts[0] * 60) + parts[1];
+            if (parts.length === 1) return parts[0];
+            return 0;
+        }
+
+        function formatTime(totalSeconds) {
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+
+            let timeString = "";
+            if (h > 0) {
+                timeString += h + ".";
+                timeString += m.toString().padStart(2, '0') + ".";
+            } else {
+                timeString += m + ".";
+            }
+            timeString += s.toString().padStart(2, '0');
+            return timeString;
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                timerElement.textContent = formatTime(timerSeconds);
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        timerSeconds = parseTime(timerElement.textContent);
+        startTimer();
+
+        timerElement.addEventListener('focus', stopTimer);
+        timerElement.addEventListener('blur', () => {
+            timerSeconds = parseTime(timerElement.textContent.trim());
+            timerElement.textContent = formatTime(timerSeconds);
+            startTimer();
+        });
+
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    el.blur();
+                }
+            });
+        });
+
+        // --- Profile Upload Logic ---
+        const profileInput = document.getElementById('profile-upload');
+        const profileImg = document.getElementById('profile-img');
+
+        profileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    profileImg.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- Interaction Logic (Speaker, Mute, Menu Lainnya) ---
+        const btnSpeaker = document.getElementById('btn-speaker');
+        const btnMute = document.getElementById('btn-mute');
+        const btnMore = document.getElementById('btn-more');
+        
+        const panelMain = document.getElementById('panel-main');
+        const panelAlt = document.getElementById('panel-alt');
+        
+        const iconMinimize = document.getElementById('icon-minimize');
+        const iconSignal = document.getElementById('icon-signal');
+        const iconAddUser = document.getElementById('icon-add-user');
+        const iconLock = document.getElementById('icon-lock');
+
+        let isSpeakerOn = false;
+        let isMuteOn = false;
+        let isMenuOpen = false;
+
+        // Speaker Toggle (Putih + Ikon Hitam)
+        btnSpeaker.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isSpeakerOn = !isSpeakerOn;
+            if(isSpeakerOn) {
+                // Gunakan style langsung agar warna seketika berubah
+                btnSpeaker.style.backgroundColor = '#ffffff';
+                btnSpeaker.style.color = '#000000';
+            } else {
+                // Kosongkan style untuk kembali ke warna awal bawaan class
+                btnSpeaker.style.backgroundColor = '';
+                btnSpeaker.style.color = '';
+            }
+        });
+
+        // Bisukan Toggle (Putih + Ikon Merah)
+        btnMute.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isMuteOn = !isMuteOn;
+            if(isMuteOn) {
+                btnMute.style.backgroundColor = '#ffffff';
+                btnMute.style.color = '#f15c6d'; // Warna merah seperti tombol akhiri
+            } else {
+                btnMute.style.backgroundColor = '';
+                btnMute.style.color = '';
+            }
+        });
+
+        // Open Secondary Menu (Lainnya)
+        btnMore.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isMenuOpen = true;
+            
+            // Switch panels
+            panelMain.classList.add('hidden');
+            panelAlt.classList.remove('hidden');
+            
+            // Switch top header icons
+            iconMinimize.classList.add('hidden');
+            iconSignal.classList.remove('hidden');
+            iconAddUser.classList.add('hidden');
+            iconLock.classList.remove('hidden');
+        });
+
+        // Close Secondary Menu when clicking outside
+        document.querySelector('.content-layer').addEventListener('click', (e) => {
+            if (isMenuOpen && !panelAlt.contains(e.target)) {
+                isMenuOpen = false;
+                
+                // Switch back panels
+                panelAlt.classList.add('hidden');
+                panelMain.classList.remove('hidden');
+                
+                // Switch back top header icons
+                iconSignal.classList.add('hidden');
+                iconMinimize.classList.remove('hidden');
+                iconLock.classList.add('hidden');
+                iconAddUser.classList.remove('hidden');
+            }
+        });
+
+    </script>
+</body>
+</html>
